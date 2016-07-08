@@ -41,7 +41,6 @@ module Web.Slack ( runBot
                  , module Web.Slack.Config
                  ) where
 
-import           Control.Applicative
 import           Control.Lens
 import Control.Monad (forever, unless)
 import qualified Control.Monad.State        as S

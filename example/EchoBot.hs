@@ -4,7 +4,6 @@ import Web.Slack
 import Web.Slack.Message
 import System.Environment (lookupEnv)
 import Data.Maybe (fromMaybe)
-import Control.Applicative
 
 myConfig :: String -> SlackConfig
 myConfig apiToken = SlackConfig

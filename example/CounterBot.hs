@@ -8,7 +8,6 @@ import Web.Slack.Message
 
 import System.Environment (lookupEnv)
 import Data.Maybe (fromMaybe)
-import Control.Applicative
 
 import Control.Lens
 
