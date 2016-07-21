@@ -14,7 +14,7 @@
 -- >     _ -> return ()
 --
 module Web.Slack.Monad
-    ( MonadSlack
+    ( MonadSlack(..)
     , Slack(..)
     , runSlack
 
