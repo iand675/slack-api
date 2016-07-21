@@ -92,3 +92,17 @@ Test-Suite tests
     HS-Source-Dirs: tests .
     Build-Depends: slack-api, base
     Other-Modules: Tests.ConnectionTest
+
+executable example_echobot
+    default-language:    Haskell2010
+    ghc-options:         -Wall
+    hs-source-dirs:      example
+    main-is:             EchoBot.hs
+    build-depends:       base, slack-api
+
+executable example_counterbot
+    default-language:    Haskell2010
+    ghc-options:         -Wall
+    hs-source-dirs:      example
+    main-is:             CounterBot.hs
+    build-depends:       base, slack-api, text, mtl, lens
