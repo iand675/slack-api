@@ -1,20 +1,15 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE LambdaCase #-}
+
 module Main where
 
-import qualified Data.Text as T (pack)
-
-import Web.Slack
-import Web.Slack.Message
-
-import System.Environment (lookupEnv)
-import Data.Maybe (fromMaybe)
-
 import Control.Lens
-
-myConfig :: String -> SlackConfig
-myConfig apiToken = SlackConfig
-         { _slackApiToken = apiToken
-         }
+import Control.Monad
+import Control.Monad.State
+import Data.Maybe (fromMaybe)
+import qualified Data.Text as T (pack)
+import System.Environment (lookupEnv)
+import Web.Slack
 
 data CounterState = CounterState
                   { _messageCount :: Int
@@ -22,17 +17,22 @@ data CounterState = CounterState
 
 makeLenses ''CounterState
 
--- Count how many messages the bot recieves
-counterBot :: SlackBot CounterState
-counterBot (Message cid _ _ _ _ _) = do
-  num <- userState . messageCount <%= (+1)
-  sendMessage cid (T.pack . show $ num)
-counterBot _ = return ()
-
 main :: IO ()
 main = do
-  apiToken <- fromMaybe (error "SLACK_API_TOKEN not set")
-               <$> lookupEnv "SLACK_API_TOKEN"
-  runBot (myConfig apiToken) counterBot startState
-  where
-    startState = CounterState 0
+    conf <- mkConfig
+    runSlack conf $ evalStateT counterBot (CounterState 0)
+
+mkConfig :: IO SlackConfig
+mkConfig = do
+    x <- lookupEnv "SLACK_API_TOKEN"
+    let apiToken = fromMaybe (error "SLACK_API_TOKEN not set") x
+    return SlackConfig{ _slackApiToken = apiToken }
+
+-- Count how many messages the bot recieves
+counterBot :: StateT CounterState Slack ()
+counterBot = forever $
+    getNextEvent >>= \case
+        Message cid _ _ _ _ _ -> do
+            num <- messageCount <%= (+1)
+            sendMessage cid (T.pack . show $ num)
+        _ -> return ()
