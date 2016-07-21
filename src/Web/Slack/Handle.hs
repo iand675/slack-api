@@ -39,12 +39,10 @@ module Web.Slack.Handle
 import Control.Error
 import Control.Monad.Except
 import Data.Aeson
-import qualified Data.ByteString.Lazy as BL
 import Data.IORef
 import Data.Monoid
 import qualified Data.Text as T
 import Data.Time.Clock.POSIX
-import qualified Network.Socket as S
 import qualified Network.URI as URI
 import qualified Network.WebSockets as WS
 import Web.Slack.Types
