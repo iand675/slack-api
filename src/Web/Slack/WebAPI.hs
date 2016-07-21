@@ -14,7 +14,6 @@ module Web.Slack.WebAPI
 import Control.Lens hiding ((??))
 import Control.Monad.Except
 import Data.Aeson
-import Data.Aeson.Coerce
 import Data.Aeson.Lens
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
@@ -58,14 +57,8 @@ rtm_start
 rtm_start conf = do
     resp <- makeSlackCall conf "rtm.start" id
     url <- resp ^? key "url" . _String ?? "rtm_start: No url!"
-    sessionInfo <- fromJSON' $ fixRetentionType resp
+    sessionInfo <- fromJSON' resp
     return (url, sessionInfo)
-  where
-    -- correct "1" to 1 for retention_type keys.
-    -- the json slack hands out doesn't adhere to types.
-    fixRetentionType = ((key "team" . key "prefs" . key "retention_type") `over` asNumber)
-      . ((key "team" . key "prefs" . key "group_retention_type") `over` asNumber)
-      . ((key "team" . key "prefs" . key "dm_retention_type") `over` asNumber)
 
 chat_postMessage
     :: (MonadError T.Text m, MonadIO m)
